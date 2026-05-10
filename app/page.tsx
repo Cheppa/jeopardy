@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
-import { Plus, Play, Trash2, Edit } from "lucide-react";
+import { Plus, Play, Trash2, Edit, Zap } from "lucide-react";
 import type { Game } from "@/lib/types";
 import { getSavedGames, saveGame, deleteGame } from "@/lib/storage";
 import { SetupForm } from "@/components/jeopardy/setup-form";
 import { GameBoard } from "@/components/jeopardy/game-board";
+import { createDemoGame } from "@/lib/demo-game";
 
 type View = "home" | "setup" | "play";
 
@@ -32,6 +33,12 @@ export default function Home() {
   const handleNewGame = () => {
     setCurrentGame(createNewGame());
     setView("setup");
+  };
+
+  const handleDemoGame = () => {
+    const demo = createDemoGame();
+    setCurrentGame(demo);
+    setView("play");
   };
 
   const handleEditGame = (game: Game) => {
@@ -96,24 +103,33 @@ export default function Home() {
             <span className="text-[var(--secondary)]">JEOPARDY</span>
           </h1>
           <p className="text-lg text-[var(--muted-foreground)]">
-            Game Master Tool
+            Pelin johtajan työkalu
           </p>
         </div>
 
-        {/* New Game Button */}
-        <button
-          onClick={handleNewGame}
-          className="mb-8 flex w-full items-center justify-center gap-3 rounded-xl bg-[var(--secondary)] px-6 py-4 text-lg font-semibold text-[var(--secondary-foreground)] transition-opacity hover:opacity-90"
-        >
-          <Plus className="h-6 w-6" />
-          Create New Game
-        </button>
+        {/* Buttons */}
+        <div className="mb-8 flex flex-col gap-3">
+          <button
+            onClick={handleDemoGame}
+            className="flex w-full items-center justify-center gap-3 rounded-xl bg-[var(--secondary)] px-6 py-4 text-lg font-semibold text-[var(--secondary-foreground)] transition-opacity hover:opacity-90"
+          >
+            <Zap className="h-6 w-6" />
+            Aloita valmis peli (suomi)
+          </button>
+          <button
+            onClick={handleNewGame}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--card)] px-6 py-4 text-lg font-semibold transition-colors hover:bg-[var(--muted)]"
+          >
+            <Plus className="h-6 w-6" />
+            Luo uusi peli
+          </button>
+        </div>
 
         {/* Saved Games */}
         {savedGames.length > 0 && (
           <div>
             <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-[var(--muted-foreground)]">
-              Saved Games
+              Tallennetut pelit
             </h2>
             <div className="space-y-3">
               {savedGames.map((game) => (
@@ -123,32 +139,32 @@ export default function Home() {
                 >
                   <div>
                     <h3 className="font-semibold">
-                      {game.name || "Untitled Game"}
+                      {game.name || "Nimetön peli"}
                     </h3>
                     <p className="text-sm text-[var(--muted-foreground)]">
-                      {game.categories.length} categories •{" "}
-                      {new Date(game.createdAt).toLocaleDateString()}
+                      {game.categories.length} kategoriaa •{" "}
+                      {new Date(game.createdAt).toLocaleDateString("fi-FI")}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEditGame(game)}
                       className="rounded-lg p-2 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-white"
-                      title="Edit"
+                      title="Muokkaa"
                     >
                       <Edit className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handlePlayGame(game)}
                       className="rounded-lg bg-[var(--primary)] p-2 text-white transition-colors hover:bg-[var(--primary)]/80"
-                      title="Play"
+                      title="Pelaa"
                     >
                       <Play className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteGame(game.id)}
                       className="rounded-lg p-2 text-[var(--muted-foreground)] transition-colors hover:bg-red-900/50 hover:text-red-400"
-                      title="Delete"
+                      title="Poista"
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
